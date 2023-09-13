@@ -15,6 +15,7 @@ import java.util.List;
 @Slf4j
 public class ItemController {
     private final ItemService itemService;
+
     @GetMapping
     public List<ItemDto> getAllItems(@RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Получен запрос GET /items");
