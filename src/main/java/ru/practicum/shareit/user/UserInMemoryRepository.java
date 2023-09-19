@@ -37,16 +37,9 @@ public class UserInMemoryRepository implements UserRepository {
     @Override
     public User update(User user) {
         User oldUser = users.get(user.getId());
-        String oldName = oldUser.getName();
-        String oldEmail = oldUser.getEmail();
-        if (user.getEmail() == null) {
-            user.setEmail(oldEmail);
-        } else if (users.values().stream()
-                .anyMatch(usr -> !usr.getEmail().equals(oldEmail) && usr.getEmail().equals(user.getEmail()))) {
+        if (users.values().stream()
+                .anyMatch(usr -> !usr.getEmail().equals(oldUser.getEmail()) && usr.getEmail().equals(user.getEmail()))) {
             throw new EmailAlreadyExistException("Пользователь с email " + user.getEmail() + " уже существует.");
-        }
-        if (user.getName() == null) {
-            user.setName(oldName);
         }
         users.put(user.getId(), user);
         return user;

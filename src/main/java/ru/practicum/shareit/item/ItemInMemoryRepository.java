@@ -37,17 +37,8 @@ public class ItemInMemoryRepository implements ItemRepository {
 
     @Override
     public Item update(Item item) {
-        Item oldItem = items.get(item.getId());
-        if (item.getName() == null) {
-            item.setName(oldItem.getName());
-        }
-        if (item.getDescription() == null) {
-            item.setDescription(oldItem.getDescription());
-        }
-        if (item.getAvailable() == null) {
-            item.setAvailable(oldItem.getAvailable());
-        }
         items.put(item.getId(), item);
+
         return item;
     }
 
