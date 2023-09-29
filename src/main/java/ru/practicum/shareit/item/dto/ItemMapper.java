@@ -21,7 +21,7 @@ public class ItemMapper {
     public static ItemInfoDto toItemInfoDto(Item item,
                                             BookingInfoDto lastBooking,
                                             BookingInfoDto nextBooking,
-                                            List<CommentDto> comments){
+                                            List<CommentDto> comments) {
         long id = item.getId();
         String name = item.getName();
         String description = item.getDescription();
