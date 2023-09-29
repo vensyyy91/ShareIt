@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(long userId) {
-        User user = userRepository.findById(userId);
+        User user = checkUser(userId);
         log.info("Возвращен пользователь: " + user);
 
         return UserMapper.toUserDto(user);
@@ -44,16 +45,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(long userId, UserDto userDto) {
+        User oldUser = checkUser(userId);
         User user = UserMapper.toUser(userDto);
         user.setId(userId);
-        User oldUser = userRepository.findById(user.getId());
         if (user.getEmail() == null) {
             user.setEmail(oldUser.getEmail());
         }
         if (user.getName() == null) {
             user.setName(oldUser.getName());
         }
-        User updatedUser = userRepository.update(user);
+        User updatedUser = userRepository.save(user);
         log.info("Обновлен пользователь: " + updatedUser);
 
         return UserMapper.toUserDto(updatedUser);
@@ -61,7 +62,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(long userId) {
-        userRepository.delete(userId);
+        checkUser(userId);
+        userRepository.deleteById(userId);
         log.info("Удален пользователь с id=" + userId);
+    }
+
+    private User checkUser(long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с id= " + userId + " не найден."));
     }
 }
