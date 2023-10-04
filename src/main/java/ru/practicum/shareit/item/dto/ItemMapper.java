@@ -36,6 +36,6 @@ public class ItemMapper {
         String description = itemDto.getDescription();
         Boolean isAvailable = itemDto.getAvailable();
 
-        return new Item(id, name, description, 0, isAvailable, 0);
+        return new Item(id, name, description, null, isAvailable, null);
     }
 }

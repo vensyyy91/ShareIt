@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Status;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class ItemServiceImpl implements ItemService {
@@ -34,7 +36,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemInfoDto> getAllItems(long userId) {
-        checkUser(userId);
+        getUser(userId);
         List<ItemInfoDto> items = itemRepository.findAllByOwnerOrderById(userId).stream()
                 .map(item -> {
                     List<CommentDto> comments = commentRepository.findAllByItemId(item.getId()).stream()
@@ -51,8 +53,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemInfoDto getItemById(long userId, long itemId) {
-        checkUser(userId);
-        Item item = checkItem(itemId);
+        getUser(userId);
+        Item item = getItem(itemId);
         log.info("Возвращена вещь: " + item);
         List<CommentDto> comments = commentRepository.findAllByItemId(itemId).stream()
                 .map(CommentMapper::toCommentDto)
@@ -69,8 +71,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDto addItem(long userId, ItemDto itemDto) {
-        checkUser(userId);
+        getUser(userId);
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(userId);
         Item newItem = itemRepository.save(item);
@@ -80,9 +83,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
-        checkUser(userId);
-        Item oldItem = checkItem(itemId);
+        getUser(userId);
+        Item oldItem = getItem(itemId);
         long ownerId = oldItem.getOwner();
         if (userId != ownerId) {
             throw new AccessDeniedException("Редактировать вещь может только её владелец.");
@@ -119,9 +123,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public CommentDto addComment(long userId, long itemId, CommentDto commentDto) {
-        User author = checkUser(userId);
-        Item item = checkItem(itemId);
+        User author = getUser(userId);
+        Item item = getItem(itemId);
         if (bookingRepository.findAllByItemId(itemId).stream()
                 .noneMatch(booking -> booking.getStatus() == Status.APPROVED &&
                                 booking.getEnd().isBefore(LocalDateTime.now()) &&
@@ -137,12 +142,12 @@ public class ItemServiceImpl implements ItemService {
         return CommentMapper.toCommentDto(newComment);
     }
 
-    private User checkUser(long userId) {
+    private User getUser(long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с id= " + userId + " не найден."));
     }
 
-    private Item checkItem(long itemId) {
+    private Item getItem(long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Вещь с id=" + itemId + " не найдена."));
     }

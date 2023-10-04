@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingCreationDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -15,9 +16,11 @@ import ru.practicum.shareit.user.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class BookingServiceImpl implements BookingService {
@@ -26,10 +29,11 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public BookingDto addBooking(long userId, BookingCreationDto bookingCreationDto) {
-        User booker = checkUser(userId);
-        Item item = checkItem(bookingCreationDto.getItemId());
-        if (item.getOwner() == booker.getId()) {
+        User booker = getUser(userId);
+        Item item = getItem(bookingCreationDto.getItemId());
+        if (Objects.equals(item.getOwner(), booker.getId())) {
             throw new AccessDeniedException("Владелец не может забронировать собственную вещь.");
         }
         if (!item.getAvailable()) {
@@ -46,17 +50,17 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto approveBooking(long userId, long bookingId, boolean approved) {
-        Booking booking = checkBooking(bookingId);
-        User owner = checkUser(userId);
-        if (booking.getItem().getOwner() != owner.getId()) {
+        Booking booking = getBooking(bookingId);
+        User owner = getUser(userId);
+        if (!Objects.equals(booking.getItem().getOwner(), owner.getId())) {
             throw new AccessDeniedException("Подтверждать или отклонять бронирование может только владелец вещи.");
         }
         if (booking.getStatus() != Status.WAITING) {
             throw new BookingUnavailableException("Данное бронирование уже было подтверждено или отклонено ранее.");
         }
         booking.setStatus(approved ? Status.APPROVED : Status.REJECTED);
-        bookingRepository.save(booking);
         log.info(String.format("Владелец вещи изменил статус бронирования с id=%d на %s", bookingId, booking.getStatus()));
 
         return BookingMapper.toBookingDto(booking);
@@ -64,9 +68,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto getBooking(long userId, long bookingId) {
-        Booking booking = checkBooking(bookingId);
-        User user = checkUser(userId);
-        if (booking.getItem().getOwner() != user.getId() && booking.getBooker().getId() != user.getId()) {
+        Booking booking = getBooking(bookingId);
+        User user = getUser(userId);
+        if (!Objects.equals(booking.getItem().getOwner(), user.getId()) && !Objects.equals(booking.getBooker().getId(), user.getId())) {
             throw new AccessDeniedException("Получить информацию о бронировании может только владелец вещи или автор бронирования.");
         }
         log.info("Возвращено бронирование: " + booking);
@@ -76,7 +80,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getUserBookings(long userId, State state) {
-        checkUser(userId);
+        getUser(userId);
         List<Booking> bookings = new ArrayList<>();
         switch (state) {
             case ALL:
@@ -106,7 +110,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getUserItemsBookings(long userId, State state) {
-        checkUser(userId);
+        getUser(userId);
         List<Booking> bookings = new ArrayList<>();
         switch (state) {
             case ALL:
@@ -134,17 +138,17 @@ public class BookingServiceImpl implements BookingService {
         return bookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
-    private User checkUser(long userId) {
+    private User getUser(long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с id= " + userId + " не найден."));
     }
 
-    private Item checkItem(long itemId) {
+    private Item getItem(long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Вещь с id=" + itemId + " не найдена."));
     }
 
-    private Booking checkBooking(long bookingId) {
+    private Booking getBooking(long bookingId) {
         return bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException("Бронирование с id= " + bookingId + " не найдено."));
     }

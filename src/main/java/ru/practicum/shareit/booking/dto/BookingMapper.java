@@ -2,10 +2,6 @@ package ru.practicum.shareit.booking.dto;
 
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.Status;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
 
 import java.time.LocalDateTime;
 
@@ -14,19 +10,23 @@ public class BookingMapper {
     }
 
     public static BookingDto toBookingDto(Booking booking) {
-        long id = booking.getId();
+        Long id = booking.getId();
         LocalDateTime start = booking.getStart();
         LocalDateTime end = booking.getEnd();
-        ItemDto item = ItemMapper.toItemDto(booking.getItem());
-        UserDto booker = UserMapper.toUserDto(booking.getBooker());
+        Long itemId = booking.getItem().getId();
+        String itemName = booking.getItem().getName();
+        BookingDto.Item item = new BookingDto.Item(itemId, itemName);
+        Long bookerId = booking.getBooker().getId();
+        String bookerName = booking.getBooker().getName();
+        BookingDto.Booker booker = new BookingDto.Booker(bookerId, bookerName);
         Status status = booking.getStatus();
 
         return new BookingDto(id, start, end, item, booker, status);
     }
 
     public static BookingInfoDto toBookingInfoDto(Booking booking) {
-        long id = booking.getId();
-        long bookerId = booking.getBooker().getId();
+        Long id = booking.getId();
+        Long bookerId = booking.getBooker().getId();
         LocalDateTime start = booking.getStart();
         LocalDateTime end = booking.getEnd();
 
@@ -37,6 +37,6 @@ public class BookingMapper {
         LocalDateTime start = bookingCreationDto.getStart();
         LocalDateTime end = bookingCreationDto.getEnd();
 
-        return new Booking(0, start, end, null, null, null);
+        return new Booking(null, start, end, null, null, null);
     }
 }
