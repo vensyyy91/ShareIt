@@ -26,11 +26,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return getId() != null && Objects.equals(getId(), user.getId());
+        return Objects.equals(email, user.getEmail());
     }
 
     @Override
     public final int hashCode() {
-        return getClass().hashCode();
+        return Objects.hashCode(email);
     }
 }
