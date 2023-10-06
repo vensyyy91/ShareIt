@@ -4,10 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemInfoDto;
 import ru.practicum.shareit.validation.ValidationOnCreate;
 import ru.practicum.shareit.validation.ValidationOnUpdate;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,15 +21,16 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemDto> getAllItems(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemInfoDto> getAllItems(@RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Получен запрос GET /items");
         return itemService.getAllItems(userId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable long itemId) {
+    public ItemInfoDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
+                               @PathVariable long itemId) {
         log.info("Получен запрос GET /items/" + itemId);
-        return itemService.getItemById(itemId);
+        return itemService.getItemById(userId, itemId);
     }
 
     @PostMapping
@@ -48,5 +52,12 @@ public class ItemController {
     public List<ItemDto> searchItem(@RequestParam String text) {
         log.info("Получен запрос GET /items/search?text=" + text);
         return itemService.searchItem(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
+                              @PathVariable long itemId,
+                              @Valid @RequestBody CommentDto commentDto) {
+        return itemService.addComment(userId, itemId, commentDto);
     }
 }

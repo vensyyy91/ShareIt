@@ -1,7 +1,6 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.item;
 
 import lombok.*;
-import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
@@ -14,36 +13,34 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "bookings")
-public class Booking {
+@Table(name = "comments")
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "start_time", nullable = false)
-    private LocalDateTime start;
-    @Column(name = "end_time", nullable = false)
-    private LocalDateTime end;
+    @Column(name = "text", nullable = false)
+    private String text;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id", nullable = false)
+    @JoinColumn(name = "item_id")
     @ToString.Exclude
     private Item item;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "booker_id", nullable = false)
+    @JoinColumn(name = "author_id")
     @ToString.Exclude
-    private User booker;
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    private User author;
+    @Column(name = "created_time")
+    private LocalDateTime created;
 
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Booking booking = (Booking) o;
-        return getId() != null && Objects.equals(getId(), booking.getId());
+        Comment comment = (Comment) o;
+        return getId() != null && Objects.equals(getId(), comment.getId());
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return getClass().hashCode();
     }
 }
