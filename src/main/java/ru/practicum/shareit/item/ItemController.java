@@ -11,19 +11,23 @@ import ru.practicum.shareit.validation.ValidationOnCreate;
 import ru.practicum.shareit.validation.ValidationOnUpdate;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/items")
+@Validated
 @Slf4j
 public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemInfoDto> getAllItems(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemInfoDto> getAllItems(@RequestHeader("X-Sharer-User-Id") long userId,
+                                         @RequestParam(defaultValue = "0") @Min(0) int from,
+                                         @RequestParam(defaultValue = "10") int size) {
         log.info("Получен запрос GET /items");
-        return itemService.getAllItems(userId);
+        return itemService.getAllItems(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
@@ -49,9 +53,11 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItem(@RequestParam String text) {
+    public List<ItemDto> searchItem(@RequestParam String text,
+                                    @RequestParam(defaultValue = "0") @Min(0) int from,
+                                    @RequestParam(defaultValue = "10") int size) {
         log.info("Получен запрос GET /items/search?text=" + text);
-        return itemService.searchItem(text);
+        return itemService.searchItem(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

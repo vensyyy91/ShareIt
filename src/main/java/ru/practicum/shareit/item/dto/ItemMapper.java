@@ -14,8 +14,9 @@ public class ItemMapper {
         String name = item.getName();
         String description = item.getDescription();
         Boolean isAvailable = item.getAvailable();
+        long requestId = item.getRequest();
 
-        return new ItemDto(id, name, description, isAvailable);
+        return new ItemDto(id, name, description, isAvailable, requestId);
     }
 
     public static ItemInfoDto toItemInfoDto(Item item,
@@ -35,7 +36,8 @@ public class ItemMapper {
         String name = itemDto.getName();
         String description = itemDto.getDescription();
         Boolean isAvailable = itemDto.getAvailable();
+        long request = itemDto.getRequestId();
 
-        return new Item(id, name, description, null, isAvailable, null);
+        return new Item(id, name, description, null, isAvailable, request);
     }
 }

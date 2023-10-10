@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingCreationDto;
@@ -79,27 +80,50 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getUserBookings(long userId, State state) {
+    public List<BookingDto> getUserBookings(long userId, State state, int from, int size) {
         getUser(userId);
         List<Booking> bookings = new ArrayList<>();
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
+                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(
+                        userId,
+                        PageRequest.of(from / size, size)
+                ).getContent();
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+                bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(
+                        userId,
+                        LocalDateTime.now(),
+                        PageRequest.of(from / size, size)
+                ).getContent();
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllCurrentByBookerId(userId, LocalDateTime.now());
+                bookings = bookingRepository.findAllCurrentByBookerId(
+                        userId,
+                        LocalDateTime.now(),
+                        PageRequest.of(from / size, size)
+                ).getContent();
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
+                bookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(
+                        userId,
+                        LocalDateTime.now(),
+                        PageRequest.of(from / size, size)
+                ).getContent();
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
+                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(
+                        userId,
+                        Status.WAITING,
+                        PageRequest.of(from / size, size)
+                ).getContent();
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
+                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(
+                        userId,
+                        Status.REJECTED,
+                        PageRequest.of(from / size, size)
+                ).getContent();
                 break;
         }
         log.info(String.format("Возвращен список всех бронирований пользователя с id=%d, параметр state=%s: %s",
@@ -109,27 +133,50 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getUserItemsBookings(long userId, State state) {
+    public List<BookingDto> getUserItemsBookings(long userId, State state, int from, int size) {
         getUser(userId);
         List<Booking> bookings = new ArrayList<>();
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findAllByItemOwnerOrderByStartDesc(userId);
+                bookings = bookingRepository.findAllByItemOwnerOrderByStartDesc(
+                        userId,
+                        PageRequest.of(from / size, size)
+                ).getContent();
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByItemOwnerAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+                bookings = bookingRepository.findAllByItemOwnerAndEndBeforeOrderByStartDesc(
+                        userId,
+                        LocalDateTime.now(),
+                        PageRequest.of(from / size, size)
+                ).getContent();
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllCurrentByItemOwner(userId, LocalDateTime.now());
+                bookings = bookingRepository.findAllCurrentByItemOwner(
+                        userId,
+                        LocalDateTime.now(),
+                        PageRequest.of(from / size, size)
+                ).getContent();
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByItemOwnerAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
+                bookings = bookingRepository.findAllByItemOwnerAndStartAfterOrderByStartDesc(
+                        userId,
+                        LocalDateTime.now(),
+                        PageRequest.of(from / size, size)
+                ).getContent();
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByItemOwnerAndStatusOrderByStartDesc(userId, Status.WAITING);
+                bookings = bookingRepository.findAllByItemOwnerAndStatusOrderByStartDesc(
+                        userId,
+                        Status.WAITING,
+                        PageRequest.of(from / size, size)
+                ).getContent();
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByItemOwnerAndStatusOrderByStartDesc(userId, Status.REJECTED);
+                bookings = bookingRepository.findAllByItemOwnerAndStatusOrderByStartDesc(
+                        userId,
+                        Status.REJECTED,
+                        PageRequest.of(from / size, size)
+                ).getContent();
                 break;
         }
         log.info(String.format("Возвращен список бронирований для всех вещей пользователя с id=%d, параметр state=%s: %s",

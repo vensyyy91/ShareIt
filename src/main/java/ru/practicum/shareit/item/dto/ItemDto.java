@@ -22,4 +22,6 @@ public class ItemDto {
     private String description;
     @NotNull(groups = ValidationOnCreate.class)
     private Boolean available;
+    private long requestId;
+
 }
