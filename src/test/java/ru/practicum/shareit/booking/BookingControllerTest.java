@@ -167,11 +167,8 @@ class BookingControllerTest {
     @Test
     @SneakyThrows
     void addBooking_withStartEqualEnd_shouldReturnBadRequest() {
-        BookingCreationDto booking = new BookingCreationDto(
-                1L,
-                LocalDateTime.now().plusMinutes(5),
-                LocalDateTime.now().plusMinutes(5)
-        );
+        LocalDateTime time = LocalDateTime.now().plusMinutes(5);
+        BookingCreationDto booking = new BookingCreationDto(1L, time, time);
 
         mvc.perform(post(BOOKINGS_PATH)
                         .header("X-Sharer-User-Id", 1)
