@@ -187,7 +187,7 @@ class ItemRequestServiceTest {
                 .thenReturn(Optional.empty());
 
         Throwable ex = assertThrows(UserNotFoundException.class,
-                () -> itemRequestService.getAllRequests(99, 0 , 10));
+                () -> itemRequestService.getAllRequests(99, 0, 10));
         assertEquals("Пользователь с id=99 не найден.", ex.getMessage());
     }
 

@@ -163,9 +163,9 @@ class ItemServiceIT {
         em.persist(item2);
         ItemDto itemDto1 = ItemMapper.toItemDto(item1);
         ItemDto itemDto2 = ItemMapper.toItemDto(item2);
-        List<ItemDto> search1 = itemService.searchItem("item1", 0 ,10);
+        List<ItemDto> search1 = itemService.searchItem("item1", 0,10);
         List<ItemDto> search2 = itemService.searchItem("second", 0, 10);
-        List<ItemDto> search3 = itemService.searchItem("item", 0 , 10);
+        List<ItemDto> search3 = itemService.searchItem("item", 0, 10);
 
         assertEquals(1, search1.size());
         assertEquals(itemDto1, search1.get(0));

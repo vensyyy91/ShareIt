@@ -388,7 +388,7 @@ class ItemServiceTest {
                 .thenReturn(new PageImpl<>(List.of(item1, item2)));
 
         List<ItemDto> expected = List.of(itemDto1, itemDto2);
-        List<ItemDto> items = itemService.searchItem("item", 0 ,10);
+        List<ItemDto> items = itemService.searchItem("item", 0,10);
 
         assertEquals(2, items.size());
         assertIterableEquals(expected, items);
@@ -396,7 +396,7 @@ class ItemServiceTest {
 
     @Test
     public void searchItem_withEmptyString_shouldReturnEmptyList() {
-        List<ItemDto> items = itemService.searchItem("", 0 ,10);
+        List<ItemDto> items = itemService.searchItem("", 0,10);
 
         assertEquals(0, items.size());
     }
