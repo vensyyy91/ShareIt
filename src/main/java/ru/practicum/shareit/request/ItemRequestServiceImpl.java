@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.RequestNotFoundException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class ItemRequestServiceImpl implements ItemRequestService {
@@ -28,6 +30,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRepository itemRepository;
 
     @Override
+    @Transactional
     public ItemRequestDto addRequest(long userId, ItemRequestDto itemRequestDto) {
         checkUser(userId);
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto);
@@ -76,12 +79,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     private void checkUser(long userId) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с id= " + userId + " не найден."));
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с id=" + userId + " не найден."));
     }
 
     private ItemRequest getItemRequest(long requestId) {
         return itemRequestRepository.findById(requestId)
-                .orElseThrow(() -> new RequestNotFoundException("Запрос с id= " + requestId + " не найден."));
+                .orElseThrow(() -> new RequestNotFoundException("Запрос с id=" + requestId + " не найден."));
     }
 
     private ItemRequestDto mapItemRequestToDto(ItemRequest itemRequest) {

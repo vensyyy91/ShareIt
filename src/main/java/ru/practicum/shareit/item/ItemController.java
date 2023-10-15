@@ -25,8 +25,8 @@ public class ItemController {
     @GetMapping
     public List<ItemInfoDto> getAllItems(@RequestHeader("X-Sharer-User-Id") long userId,
                                          @RequestParam(defaultValue = "0") @Min(0) int from,
-                                         @RequestParam(defaultValue = "10") int size) {
-        log.info("Получен запрос GET /items");
+                                         @RequestParam(defaultValue = "10") @Min(1) int size) {
+        log.info(String.format("Получен запрос GET /items?from=%d&size=%d", from, size));
         return itemService.getAllItems(userId, from, size);
     }
 
@@ -55,8 +55,8 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> searchItem(@RequestParam String text,
                                     @RequestParam(defaultValue = "0") @Min(0) int from,
-                                    @RequestParam(defaultValue = "10") int size) {
-        log.info("Получен запрос GET /items/search?text=" + text);
+                                    @RequestParam(defaultValue = "10") @Min(1) int size) {
+        log.info(String.format("Получен запрос GET /items/search?text=%s&from=%d&size=%d", text, from, size));
         return itemService.searchItem(text, from, size);
     }
 

@@ -59,7 +59,7 @@ public class BookingServiceImpl implements BookingService {
             throw new AccessDeniedException("Подтверждать или отклонять бронирование может только владелец вещи.");
         }
         if (booking.getStatus() != Status.WAITING) {
-            throw new BookingUnavailableException("Данное бронирование уже было подтверждено или отклонено ранее.");
+            throw new BookingUnavailableException("Бронирование с id=" + bookingId + " уже было подтверждено или отклонено ранее.");
         }
         booking.setStatus(approved ? Status.APPROVED : Status.REJECTED);
         log.info(String.format("Владелец вещи изменил статус бронирования с id=%d на %s", bookingId, booking.getStatus()));
@@ -187,7 +187,7 @@ public class BookingServiceImpl implements BookingService {
 
     private User getUser(long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с id= " + userId + " не найден."));
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с id=" + userId + " не найден."));
     }
 
     private Item getItem(long itemId) {
@@ -197,6 +197,6 @@ public class BookingServiceImpl implements BookingService {
 
     private Booking getBooking(long bookingId) {
         return bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new BookingNotFoundException("Бронирование с id= " + bookingId + " не найдено."));
+                .orElseThrow(() -> new BookingNotFoundException("Бронирование с id=" + bookingId + " не найдено."));
     }
 }

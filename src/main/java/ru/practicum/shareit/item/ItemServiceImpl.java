@@ -138,7 +138,7 @@ public class ItemServiceImpl implements ItemService {
 
     private User getUser(long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с id= " + userId + " не найден."));
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с id=" + userId + " не найден."));
     }
 
     private Item getItem(long itemId) {
@@ -148,7 +148,7 @@ public class ItemServiceImpl implements ItemService {
 
     private BookingInfoDto getLastBooking(List<Booking> bookings) {
         Optional<Booking> booking = bookings.stream()
-                .filter(b -> !b.getStart().isAfter(LocalDateTime.now()))
+                .filter(b -> b.getStart().isBefore(LocalDateTime.now()))
                 .filter(b -> b.getStatus() == Status.APPROVED)
                 .max(Comparator.comparing(Booking::getStart));
 

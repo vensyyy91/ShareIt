@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ItemDto {
-    private long id;
+    private Long id;
     @NotBlank(groups = ValidationOnCreate.class)
     private String name;
     @NotBlank(groups = ValidationOnCreate.class)
@@ -22,6 +22,5 @@ public class ItemDto {
     private String description;
     @NotNull(groups = ValidationOnCreate.class)
     private Boolean available;
-    private long requestId;
-
+    private Long requestId;
 }

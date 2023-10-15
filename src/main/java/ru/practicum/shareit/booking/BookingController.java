@@ -45,8 +45,8 @@ public class BookingController {
     public List<BookingDto> getUserBookings(@RequestHeader("X-Sharer-User-Id") long userId,
                                             @RequestParam(defaultValue = "ALL") State state,
                                             @RequestParam(defaultValue = "0") @Min(0) int from,
-                                            @RequestParam(defaultValue = "10") int size) {
-        log.info("Получен запрос GET /bookings");
+                                            @RequestParam(defaultValue = "10") @Min(1) int size) {
+        log.info(String.format("Получен запрос GET /bookings?state=%s&from=%d&size=%d", state, from, size));
         return bookingService.getUserBookings(userId, state, from, size);
     }
 
@@ -54,8 +54,8 @@ public class BookingController {
     public List<BookingDto> getUserItemsBookings(@RequestHeader("X-Sharer-User-Id") long userId,
                                                  @RequestParam(defaultValue = "ALL") State state,
                                                  @RequestParam(defaultValue = "0") @Min(0) int from,
-                                                 @RequestParam(defaultValue = "10") int size) {
-        log.info("Получен запрос GET /bookings/owner");
+                                                 @RequestParam(defaultValue = "10") @Min(1) int size) {
+        log.info(String.format("Получен запрос GET /bookings/owner?state=%s&from=%d&size=%d", state, from, size));
         return bookingService.getUserItemsBookings(userId, state, from, size);
     }
 }

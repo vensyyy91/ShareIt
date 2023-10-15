@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto {
-    private final long id;
+    private Long id;
     @NotBlank(groups = ValidationOnCreate.class)
     private String name;
     @Email(groups = {ValidationOnCreate.class, ValidationOnUpdate.class})

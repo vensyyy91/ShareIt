@@ -7,7 +7,7 @@ public class UserMapper {
     }
 
     public static UserDto toUserDto(User user) {
-        long id = user.getId();
+        Long id = user.getId();
         String name = user.getName();
         String email = user.getEmail();
 
@@ -15,7 +15,7 @@ public class UserMapper {
     }
 
     public static User toUser(UserDto userDto) {
-        long id = userDto.getId();
+        Long id = userDto.getId();
         String name = userDto.getName();
         String email = userDto.getEmail();
 

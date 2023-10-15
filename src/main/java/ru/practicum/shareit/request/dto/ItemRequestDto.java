@@ -13,10 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ItemRequestDto {
-    private long id;
+    private Long id;
     @NotBlank
     private String description;
-    private long requester;
+    private Long requester;
     private LocalDateTime created;
     private List<ItemDto> items;
 }
