@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class ItemInfoDto {
-    private long id;
+    private Long id;
     private String name;
     private String description;
     private Boolean available;

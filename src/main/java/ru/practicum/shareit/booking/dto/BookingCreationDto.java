@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @StartBeforeEnd
 public class BookingCreationDto {
     @NotNull
-    private long itemId;
+    private Long itemId;
     @NotNull
     @FutureOrPresent
     private LocalDateTime start;

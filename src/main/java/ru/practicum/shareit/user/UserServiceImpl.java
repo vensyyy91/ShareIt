@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
         List<UserDto> users = userRepository.findAll().stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
-        log.info("Возвращен список пользователей: " + users);
+        log.info("Возвращен список пользователей: {}", users);
 
         return users;
     }
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserById(long userId) {
         User user = getUser(userId);
-        log.info("Возвращен пользователь: " + user);
+        log.info("Возвращен пользователь: {}", user);
 
         return UserMapper.toUserDto(user);
     }
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto userDto) {
         User user = UserMapper.toUser(userDto);
         User newUser = userRepository.save(user);
-        log.info("Добавлен пользователь: " + newUser);
+        log.info("Добавлен пользователь: {}", newUser);
 
         return UserMapper.toUserDto(newUser);
     }
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
             user.setName(oldUser.getName());
         }
         User updatedUser = userRepository.save(user);
-        log.info("Обновлен пользователь: " + updatedUser);
+        log.info("Обновлен пользователь: {}", updatedUser);
 
         return UserMapper.toUserDto(updatedUser);
     }
@@ -69,11 +69,11 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(long userId) {
         getUser(userId);
         userRepository.deleteById(userId);
-        log.info("Удален пользователь с id=" + userId);
+        log.info("Удален пользователь с id={}", userId);
     }
 
     private User getUser(long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с id= " + userId + " не найден."));
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с id=" + userId + " не найден."));
     }
 }

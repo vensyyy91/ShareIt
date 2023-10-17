@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class BookingDto {
-    private long id;
+    private Long id;
     private LocalDateTime start;
     private LocalDateTime end;
     private Item item;
@@ -18,13 +18,13 @@ public class BookingDto {
 
     @Data
     public static class Booker {
-        private final long id;
+        private final Long id;
         private final String name;
     }
 
     @Data
     public static class Item {
-        private final long id;
+        private final Long id;
         private final String name;
     }
 }

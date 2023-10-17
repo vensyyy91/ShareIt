@@ -9,7 +9,7 @@ public class CommentMapper {
     }
 
     public static CommentDto toCommentDto(Comment comment) {
-        long id = comment.getId();
+        Long id = comment.getId();
         String text = comment.getText();
         String authorName = comment.getAuthor().getName();
         LocalDateTime created = comment.getCreated();
@@ -18,7 +18,7 @@ public class CommentMapper {
     }
 
     public static Comment toComment(CommentDto commentDto) {
-        long id = commentDto.getId();
+        Long id = commentDto.getId();
         String text = commentDto.getText();
 
         return new Comment(id, text, null, null, null);

@@ -10,19 +10,20 @@ public class ItemMapper {
     }
 
     public static ItemDto toItemDto(Item item) {
-        long id = item.getId();
+        Long id = item.getId();
         String name = item.getName();
         String description = item.getDescription();
         Boolean isAvailable = item.getAvailable();
+        Long requestId = item.getRequest();
 
-        return new ItemDto(id, name, description, isAvailable);
+        return new ItemDto(id, name, description, isAvailable, requestId);
     }
 
     public static ItemInfoDto toItemInfoDto(Item item,
                                             BookingInfoDto lastBooking,
                                             BookingInfoDto nextBooking,
                                             List<CommentDto> comments) {
-        long id = item.getId();
+        Long id = item.getId();
         String name = item.getName();
         String description = item.getDescription();
         Boolean isAvailable = item.getAvailable();
@@ -31,11 +32,12 @@ public class ItemMapper {
     }
 
     public static Item toItem(ItemDto itemDto) {
-        long id = itemDto.getId();
+        Long id = itemDto.getId();
         String name = itemDto.getName();
         String description = itemDto.getDescription();
         Boolean isAvailable = itemDto.getAvailable();
+        Long request = itemDto.getRequestId();
 
-        return new Item(id, name, description, null, isAvailable, null);
+        return new Item(id, name, description, null, isAvailable, request);
     }
 }
