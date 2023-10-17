@@ -75,9 +75,10 @@ class ItemRequestServiceTest {
 
     @Test
     void addRequest_ShouldReturnRequest() {
+        ItemRequest itemRequestToSave = new ItemRequest(1L, "first test request description", user1, null);
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(itemRequestRepository.save(any(ItemRequest.class)))
+        when(itemRequestRepository.save(itemRequestToSave))
                 .thenAnswer(invocationOnMock -> {
                     ItemRequest itemRequest = invocationOnMock.getArgument(0, ItemRequest.class);
                     itemRequest.setId(1L);
@@ -85,7 +86,7 @@ class ItemRequestServiceTest {
                     return itemRequest;
                 });
         ItemRequestDto itemRequestDtoNew = new ItemRequestDto(
-                null,
+                1L,
                 "first test request description",
                 null,
                 null,
