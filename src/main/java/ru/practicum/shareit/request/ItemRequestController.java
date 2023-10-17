@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -33,16 +34,16 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") long userId,
-                                               @RequestParam(defaultValue = "0") @Min(0) int from,
-                                               @RequestParam(defaultValue = "10") @Min(1) int size) {
-        log.info(String.format("Получен запрос GET /requests/all?from=%d&size=%d", from, size));
+                                               @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                               @RequestParam(defaultValue = "10") @Positive int size) {
+        log.info("Получен запрос GET /requests/all?from={}&size={}", from, size);
         return itemRequestService.getAllRequests(userId, from, size);
     }
 
     @GetMapping("/{requestId}")
     public ItemRequestDto getRequestById(@RequestHeader("X-Sharer-User-Id") long userId,
                                          @PathVariable long requestId) {
-        log.info("Получен запрос GET /requests/" + requestId);
+        log.info("Получен запрос GET /requests/{}", requestId);
         return itemRequestService.getRequestById(userId, requestId);
     }
 }

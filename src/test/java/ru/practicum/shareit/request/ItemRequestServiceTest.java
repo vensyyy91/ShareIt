@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ItemRequestServiceTest {
@@ -60,13 +60,13 @@ class ItemRequestServiceTest {
         itemRequest1 = new ItemRequest(
                 1L,
                 "first test request description",
-                1L,
+                user1,
                 LocalDateTime.now()
         );
         itemRequest2 = new ItemRequest(
                 2L,
                 "second test request description",
-                1L,
+                user1,
                 LocalDateTime.now().minusMinutes(10)
         );
         itemRequestDto1 = ItemRequestMapper.toItemRequestDto(itemRequest1);
@@ -77,12 +77,17 @@ class ItemRequestServiceTest {
     void addRequest_ShouldReturnRequest() {
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(itemRequestRepository.save(itemRequest1))
-                .thenReturn(itemRequest1);
+        when(itemRequestRepository.save(any(ItemRequest.class)))
+                .thenAnswer(invocationOnMock -> {
+                    ItemRequest itemRequest = invocationOnMock.getArgument(0, ItemRequest.class);
+                    itemRequest.setId(1L);
+                    itemRequest.setCreated(itemRequestDto1.getCreated());
+                    return itemRequest;
+                });
         ItemRequestDto itemRequestDtoNew = new ItemRequestDto(
-                1L,
-                "test request description",
-                0L,
+                null,
+                "first test request description",
+                null,
                 null,
                 null
         );
@@ -113,7 +118,7 @@ class ItemRequestServiceTest {
     void getUserRequests_whenUserHaveRequests_shouldReturnList() {
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(itemRequestRepository.findAllByRequester(user1.getId()))
+        when(itemRequestRepository.findAllByRequesterId(user1.getId()))
                 .thenReturn(List.of(itemRequest1, itemRequest2));
 
         List<ItemRequestDto> expected = List.of(itemRequestDto1, itemRequestDto2);
@@ -126,7 +131,7 @@ class ItemRequestServiceTest {
     void getUserRequests_whenEmpty_shouldReturnEmptyList() {
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(itemRequestRepository.findAllByRequester(user1.getId()))
+        when(itemRequestRepository.findAllByRequesterId(user1.getId()))
                 .thenReturn(new ArrayList<>());
 
         List<ItemRequestDto> requests = itemRequestService.getUserRequests(user1.getId());
@@ -154,9 +159,9 @@ class ItemRequestServiceTest {
                 .thenReturn(List.of(item1));
         when(itemRepository.findAllByRequest(itemRequest2.getId()))
                 .thenReturn(List.of(item2));
-        when(itemRequestRepository.findAllByRequesterIsNot(
+        when(itemRequestRepository.findAllByRequesterIdIsNot(
                 user2.getId(),
-                PageRequest.of(0, 10, Sort.by("created").descending())
+                PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "created"))
         ))
                 .thenReturn(new PageImpl<>(List.of(itemRequest1, itemRequest2)));
 
@@ -170,9 +175,9 @@ class ItemRequestServiceTest {
     void getAllRequests_whenEmpty_shouldReturnEmptyList() {
         when(userRepository.findById(user2.getId()))
                 .thenReturn(Optional.ofNullable(user2));
-        when(itemRequestRepository.findAllByRequesterIsNot(
+        when(itemRequestRepository.findAllByRequesterIdIsNot(
                 user2.getId(),
-                PageRequest.of(0, 10, Sort.by("created").descending())
+                PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "created"))
         ))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
 

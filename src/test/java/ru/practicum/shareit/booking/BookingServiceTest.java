@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.dto.BookingCreationDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -290,19 +291,23 @@ class BookingServiceTest {
     public void getUserBookings_withStateAll_shouldInvokeCorrespondingRepositoryMethod() {
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(bookingRepository.findAllByBookerIdOrderByStartDesc(user1.getId(), PageRequest.of(0, 10)))
+        when(bookingRepository.findAllByBookerId(
+                user1.getId(),
+                PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "start"))
+        ))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
 
         bookingService.getUserBookings(user1.getId(), State.ALL, 0, 10);
 
-        verify(bookingRepository).findAllByBookerIdOrderByStartDesc(user1.getId(), PageRequest.of(0, 10));
+        verify(bookingRepository).findAllByBookerId(user1.getId(),
+                PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "start")));
     }
 
     @Test
     public void getUserBookings_withStatePast_shouldInvokeCorrespondingRepositoryMethod() {
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(
+        when(bookingRepository.findAllByBookerIdAndEndBefore(
                 eq(user1.getId()),
                 any(LocalDateTime.class),
                 any(PageRequest.class)
@@ -311,7 +316,7 @@ class BookingServiceTest {
 
         bookingService.getUserBookings(user1.getId(), State.PAST, 0, 10);
 
-        verify(bookingRepository).findAllByBookerIdAndEndBeforeOrderByStartDesc(
+        verify(bookingRepository).findAllByBookerIdAndEndBefore(
                 eq(user1.getId()),
                 any(LocalDateTime.class),
                 any(PageRequest.class)
@@ -342,7 +347,7 @@ class BookingServiceTest {
     public void getUserBookings_withStateFuture_shouldInvokeCorrespondingRepositoryMethod() {
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(
+        when(bookingRepository.findAllByBookerIdAndStartAfter(
                 eq(user1.getId()),
                 any(LocalDateTime.class),
                 any(PageRequest.class)
@@ -351,7 +356,7 @@ class BookingServiceTest {
 
         bookingService.getUserBookings(user1.getId(), State.FUTURE, 0, 10);
 
-        verify(bookingRepository).findAllByBookerIdAndStartAfterOrderByStartDesc(
+        verify(bookingRepository).findAllByBookerIdAndStartAfter(
                 eq(user1.getId()),
                 any(LocalDateTime.class),
                 any(PageRequest.class)
@@ -362,19 +367,19 @@ class BookingServiceTest {
     public void getUserBookings_withStateWaiting_shouldInvokeCorrespondingRepositoryMethod() {
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(
-                user1.getId(),
-                Status.WAITING,
-                PageRequest.of(0, 10)
+        when(bookingRepository.findAllByBookerIdAndStatus(
+                eq(user1.getId()),
+                eq(Status.WAITING),
+                any(PageRequest.class)
         ))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
 
         bookingService.getUserBookings(user1.getId(), State.WAITING, 0, 10);
 
-        verify(bookingRepository).findAllByBookerIdAndStatusOrderByStartDesc(
-                user1.getId(),
-                Status.WAITING,
-                PageRequest.of(0, 10)
+        verify(bookingRepository).findAllByBookerIdAndStatus(
+                eq(user1.getId()),
+                eq(Status.WAITING),
+                any(PageRequest.class)
         );
     }
 
@@ -382,19 +387,19 @@ class BookingServiceTest {
     public void getUserBookings_withStateRejected_shouldInvokeCorrespondingRepositoryMethod() {
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(
-                user1.getId(),
-                Status.REJECTED,
-                PageRequest.of(0, 10)
+        when(bookingRepository.findAllByBookerIdAndStatus(
+                eq(user1.getId()),
+                eq(Status.REJECTED),
+                any(PageRequest.class)
         ))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
 
         bookingService.getUserBookings(user1.getId(), State.REJECTED, 0, 10);
 
-        verify(bookingRepository).findAllByBookerIdAndStatusOrderByStartDesc(
-                user1.getId(),
-                Status.REJECTED,
-                PageRequest.of(0, 10)
+        verify(bookingRepository).findAllByBookerIdAndStatus(
+                eq(user1.getId()),
+                eq(Status.REJECTED),
+                any(PageRequest.class)
         );
     }
 
@@ -412,19 +417,22 @@ class BookingServiceTest {
     public void getUserItemsBookings_withStateAll_shouldInvokeCorrespondingRepositoryMethod() {
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(bookingRepository.findAllByItemOwnerOrderByStartDesc(user1.getId(), PageRequest.of(0,10)))
+        when(bookingRepository.findAllByItemOwner(
+                eq(user1.getId()),
+                any(PageRequest.class)
+        ))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
 
         bookingService.getUserItemsBookings(user1.getId(), State.ALL, 0, 10);
 
-        verify(bookingRepository).findAllByItemOwnerOrderByStartDesc(user1.getId(), PageRequest.of(0, 10));
+        verify(bookingRepository).findAllByItemOwner(eq(user1.getId()), any(PageRequest.class));
     }
 
     @Test
     public void getUserItemsBookings_withStatePast_shouldInvokeCorrespondingRepositoryMethod() {
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(bookingRepository.findAllByItemOwnerAndEndBeforeOrderByStartDesc(
+        when(bookingRepository.findAllByItemOwnerAndEndBefore(
                 eq(user1.getId()),
                 any(LocalDateTime.class),
                 any(PageRequest.class)
@@ -433,7 +441,7 @@ class BookingServiceTest {
 
         bookingService.getUserItemsBookings(user1.getId(), State.PAST, 0, 10);
 
-        verify(bookingRepository).findAllByItemOwnerAndEndBeforeOrderByStartDesc(
+        verify(bookingRepository).findAllByItemOwnerAndEndBefore(
                 eq(user1.getId()),
                 any(LocalDateTime.class),
                 any(PageRequest.class)
@@ -464,7 +472,7 @@ class BookingServiceTest {
     public void getUserItemsBookings_withStateFuture_shouldInvokeCorrespondingRepositoryMethod() {
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(bookingRepository.findAllByItemOwnerAndStartAfterOrderByStartDesc(
+        when(bookingRepository.findAllByItemOwnerAndStartAfter(
                 eq(user1.getId()),
                 any(LocalDateTime.class),
                 any(PageRequest.class)
@@ -473,7 +481,7 @@ class BookingServiceTest {
 
         bookingService.getUserItemsBookings(user1.getId(), State.FUTURE, 0, 10);
 
-        verify(bookingRepository).findAllByItemOwnerAndStartAfterOrderByStartDesc(
+        verify(bookingRepository).findAllByItemOwnerAndStartAfter(
                 eq(user1.getId()),
                 any(LocalDateTime.class),
                 any(PageRequest.class)
@@ -484,19 +492,19 @@ class BookingServiceTest {
     public void getUserItemsBookings_withStateWaiting_shouldInvokeCorrespondingRepositoryMethod() {
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(bookingRepository.findAllByItemOwnerAndStatusOrderByStartDesc(
-                user1.getId(),
-                Status.WAITING,
-                PageRequest.of(0, 10)
+        when(bookingRepository.findAllByItemOwnerAndStatus(
+                eq(user1.getId()),
+                eq(Status.WAITING),
+                any(PageRequest.class)
         ))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
 
         bookingService.getUserItemsBookings(user1.getId(), State.WAITING, 0, 10);
 
-        verify(bookingRepository).findAllByItemOwnerAndStatusOrderByStartDesc(
-                user1.getId(),
-                Status.WAITING,
-                PageRequest.of(0, 10)
+        verify(bookingRepository).findAllByItemOwnerAndStatus(
+                eq(user1.getId()),
+                eq(Status.WAITING),
+                any(PageRequest.class)
         );
     }
 
@@ -504,19 +512,19 @@ class BookingServiceTest {
     public void getUserItemsBookings_withStateRejected_shouldInvokeCorrespondingRepositoryMethod() {
         when(userRepository.findById(user1.getId()))
                 .thenReturn(Optional.ofNullable(user1));
-        when(bookingRepository.findAllByItemOwnerAndStatusOrderByStartDesc(
-                user1.getId(),
-                Status.REJECTED,
-                PageRequest.of(0, 10)
+        when(bookingRepository.findAllByItemOwnerAndStatus(
+                eq(user1.getId()),
+                eq(Status.REJECTED),
+                any(PageRequest.class)
         ))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
 
         bookingService.getUserItemsBookings(user1.getId(), State.REJECTED, 0, 10);
 
-        verify(bookingRepository).findAllByItemOwnerAndStatusOrderByStartDesc(
-                user1.getId(),
-                Status.REJECTED,
-                PageRequest.of(0, 10)
+        verify(bookingRepository).findAllByItemOwnerAndStatus(
+                eq(user1.getId()),
+                eq(Status.REJECTED),
+                any(PageRequest.class)
         );
     }
 

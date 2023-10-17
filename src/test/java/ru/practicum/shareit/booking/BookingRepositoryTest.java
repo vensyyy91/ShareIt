@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.Item;
@@ -95,7 +96,7 @@ class BookingRepositoryTest {
         List<Booking> bookings = bookingRepository.findAllCurrentByBookerId(
                 3L,
                 LocalDateTime.now(),
-                PageRequest.of(0, 5)
+                PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "start"))
         ).getContent();
 
         assertEquals(2, bookings.size());
@@ -129,7 +130,7 @@ class BookingRepositoryTest {
         List<Booking> bookings = bookingRepository.findAllCurrentByItemOwner(
                 1L,
                 LocalDateTime.now(),
-                PageRequest.of(0, 5)
+                PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "start"))
         ).getContent();
 
         assertEquals(2, bookings.size());

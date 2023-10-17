@@ -44,7 +44,7 @@ public class ItemServiceImpl implements ItemService {
                 ).get()
                 .map(this::mapItemToDto)
                 .collect(Collectors.toList());
-        log.info(String.format("Возвращен список вещей для пользователя с id=%d: %s", userId, items));
+        log.info("Возвращен список вещей для пользователя с id={}: {}", userId, items);
 
         return items;
     }
@@ -58,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
             itemDto.setLastBooking(null);
             itemDto.setNextBooking(null);
         }
-        log.info("Возвращена вещь: " + itemDto);
+        log.info("Возвращена вещь: {}", itemDto);
 
         return itemDto;
     }
@@ -70,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(userId);
         Item newItem = itemRepository.save(item);
-        log.info(String.format("Пользователем с id=%d добавлена вещь: %s", userId, newItem));
+        log.info("Пользователем с id={} добавлена вещь: {}", userId, newItem);
 
         return ItemMapper.toItemDto(newItem);
     }
@@ -97,7 +97,7 @@ public class ItemServiceImpl implements ItemService {
             item.setAvailable(oldItem.getAvailable());
         }
         Item updatedItem = itemRepository.save(item);
-        log.info("Владельцем обновлена вещь: " + updatedItem);
+        log.info("Владельцем обновлена вещь: {}", updatedItem);
 
         return ItemMapper.toItemDto(updatedItem);
     }
@@ -111,7 +111,7 @@ public class ItemServiceImpl implements ItemService {
                 .get()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
-        log.info(String.format("Выполнен поиск по запросу: \"%s\". Найдены вещи: %s", text, foundItems));
+        log.info("Выполнен поиск по запросу: \"{}\". Найдены вещи: {}", text, foundItems);
 
         return foundItems;
     }
@@ -132,6 +132,7 @@ public class ItemServiceImpl implements ItemService {
         comment.setAuthor(author);
         comment.setCreated(LocalDateTime.now());
         Comment newComment = commentRepository.save(comment);
+        log.info("Пользователем с id={} добавлен комментарий к вещи с id={}: \"{}\"", userId, itemId, newComment.getText());
 
         return CommentMapper.toCommentDto(newComment);
     }

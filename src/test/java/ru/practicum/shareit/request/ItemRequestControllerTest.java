@@ -90,6 +90,34 @@ class ItemRequestControllerTest {
 
     @Test
     @SneakyThrows
+    void addRequest_withLongDescription_shouldReturnBadRequest() {
+        String description = "Testing is a crucial part of the software development process. " +
+                "It helps to ensure that the code is error-free and functions as intended. " +
+                "There are different types of testing, including unit testing, functional testing, regression testing, " +
+                "and performance testing. Each type of test focuses on different aspects of the software, " +
+                "such as the correctness of the code, the user experience, or the speed of the application. " +
+                "By conducting these tests, the developers can identify and fix any problems in the software " +
+                "before it is released to the users. This helps to improve the quality of the product " +
+                "and increases customer satisfaction.";
+        ItemRequestDto itemRequest = new ItemRequestDto(
+                1L,
+                description,
+                1L,
+                LocalDateTime.now(),
+                null
+        );
+
+        mvc.perform(post(REQUESTS_PATH)
+                        .header("X-Sharer-User-Id", 1)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(itemRequest)))
+                .andExpect(status().isBadRequest());
+
+        verify(itemRequestService, never()).addRequest(anyLong(), any(ItemRequestDto.class));
+    }
+
+    @Test
+    @SneakyThrows
     void getRequests_withUserId_shouldReturnOk() {
         mvc.perform(get(REQUESTS_PATH)
                         .header("X-Sharer-User-Id", 1))

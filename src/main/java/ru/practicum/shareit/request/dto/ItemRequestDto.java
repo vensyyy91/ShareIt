@@ -6,6 +6,7 @@ import lombok.Data;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class ItemRequestDto {
     private Long id;
     @NotBlank
+    @Size(max = 512)
     private String description;
     private Long requester;
     private LocalDateTime created;

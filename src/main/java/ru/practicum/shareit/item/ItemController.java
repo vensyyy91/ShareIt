@@ -11,7 +11,8 @@ import ru.practicum.shareit.validation.ValidationOnCreate;
 import ru.practicum.shareit.validation.ValidationOnUpdate;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -24,16 +25,16 @@ public class ItemController {
 
     @GetMapping
     public List<ItemInfoDto> getAllItems(@RequestHeader("X-Sharer-User-Id") long userId,
-                                         @RequestParam(defaultValue = "0") @Min(0) int from,
-                                         @RequestParam(defaultValue = "10") @Min(1) int size) {
-        log.info(String.format("Получен запрос GET /items?from=%d&size=%d", from, size));
+                                         @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                         @RequestParam(defaultValue = "10") @Positive int size) {
+        log.info("Получен запрос GET /items?from={}&size={}", from, size);
         return itemService.getAllItems(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
     public ItemInfoDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
                                @PathVariable long itemId) {
-        log.info("Получен запрос GET /items/" + itemId);
+        log.info("Получен запрос GET /items/{}", itemId);
         return itemService.getItemById(userId, itemId);
     }
 
@@ -48,15 +49,15 @@ public class ItemController {
     public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userId,
                               @PathVariable long itemId,
                               @Validated(ValidationOnUpdate.class) @RequestBody ItemDto itemDto) {
-        log.info("Получен запрос PATCH /items/" + itemId);
+        log.info("Получен запрос PATCH /items/{}", itemId);
         return itemService.updateItem(userId, itemId, itemDto);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchItem(@RequestParam String text,
-                                    @RequestParam(defaultValue = "0") @Min(0) int from,
-                                    @RequestParam(defaultValue = "10") @Min(1) int size) {
-        log.info(String.format("Получен запрос GET /items/search?text=%s&from=%d&size=%d", text, from, size));
+                                    @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                    @RequestParam(defaultValue = "10") @Positive int size) {
+        log.info("Получен запрос GET /items/search?text={}&from={}&size={}", text, from, size);
         return itemService.searchItem(text, from, size);
     }
 
@@ -64,6 +65,7 @@ public class ItemController {
     public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
                               @PathVariable long itemId,
                               @Valid @RequestBody CommentDto commentDto) {
+        log.info("Получен запрос POST /items/{}/comment", itemId);
         return itemService.addComment(userId, itemId, commentDto);
     }
 }

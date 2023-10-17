@@ -13,9 +13,9 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,53 +32,52 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     @Transactional
     public ItemRequestDto addRequest(long userId, ItemRequestDto itemRequestDto) {
-        checkUser(userId);
+        User user = getUser(userId);
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto);
-        itemRequest.setRequester(userId);
-        itemRequest.setCreated(LocalDateTime.now());
+        itemRequest.setRequester(user);
         ItemRequest newRequest = itemRequestRepository.save(itemRequest);
-        log.info(String.format("Пользователем с id=%d добавлен запрос: %s", userId, newRequest));
+        log.info("Пользователем с id={} добавлен запрос: {}", userId, newRequest);
 
         return ItemRequestMapper.toItemRequestDto(newRequest);
     }
 
     @Override
     public List<ItemRequestDto> getUserRequests(long userId) {
-        checkUser(userId);
-        List<ItemRequestDto> requests = itemRequestRepository.findAllByRequester(userId).stream()
+        getUser(userId);
+        List<ItemRequestDto> requests = itemRequestRepository.findAllByRequesterId(userId).stream()
                 .map(this::mapItemRequestToDto)
                 .sorted(Comparator.comparing(ItemRequestDto::getCreated).reversed())
                 .collect(Collectors.toList());
-        log.info(String.format("Возвращен список всех запросов пользователя с id=%d: %s", userId, requests));
+        log.info("Возвращен список всех запросов пользователя с id={}: {}", userId, requests);
 
         return requests;
     }
 
     @Override
     public List<ItemRequestDto> getAllRequests(long userId, int from, int size) {
-        checkUser(userId);
-        List<ItemRequestDto> requests = itemRequestRepository.findAllByRequesterIsNot(
+        getUser(userId);
+        List<ItemRequestDto> requests = itemRequestRepository.findAllByRequesterIdIsNot(
                         userId,
-                        PageRequest.of(from / size, size, Sort.by("created").descending())
+                        PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "created"))
                 ).get()
                 .map(this::mapItemRequestToDto)
                 .collect(Collectors.toList());
-        log.info(String.format("Возвращен список всех запросов (from=%d, size=%d): %s", from, size, requests));
+        log.info("Возвращен список всех запросов (from={}, size={}): {}", from, size, requests);
 
         return requests;
     }
 
     @Override
     public ItemRequestDto getRequestById(long userId, long requestId) {
-        checkUser(userId);
+        getUser(userId);
         ItemRequestDto requestDto = mapItemRequestToDto(getItemRequest(requestId));
-        log.info(String.format("Возвращен запрос с id=%d: %s", requestId, requestDto));
+        log.info("Возвращен запрос с id={}: {}", requestId, requestDto);
 
         return requestDto;
     }
 
-    private void checkUser(long userId) {
-        userRepository.findById(userId)
+    private User getUser(long userId) {
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с id=" + userId + " не найден."));
     }
 

@@ -8,7 +8,8 @@ import ru.practicum.shareit.booking.dto.BookingCreationDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -30,32 +31,32 @@ public class BookingController {
     public BookingDto approveBooking(@RequestHeader("X-Sharer-User-Id") long userId,
                                @PathVariable long bookingId,
                                @RequestParam boolean approved) {
-        log.info("Получен запрос PATCH /bookings/" + bookingId);
+        log.info("Получен запрос PATCH /bookings/{}", bookingId);
         return bookingService.approveBooking(userId, bookingId, approved);
     }
 
     @GetMapping("/{bookingId}")
     public BookingDto getBooking(@RequestHeader("X-Sharer-User-Id") long userId,
                                  @PathVariable long bookingId) {
-        log.info("Получен запрос GET /bookings/" + bookingId);
+        log.info("Получен запрос GET /bookings/{}", bookingId);
         return bookingService.getBooking(userId, bookingId);
     }
 
     @GetMapping
     public List<BookingDto> getUserBookings(@RequestHeader("X-Sharer-User-Id") long userId,
                                             @RequestParam(defaultValue = "ALL") State state,
-                                            @RequestParam(defaultValue = "0") @Min(0) int from,
-                                            @RequestParam(defaultValue = "10") @Min(1) int size) {
-        log.info(String.format("Получен запрос GET /bookings?state=%s&from=%d&size=%d", state, from, size));
+                                            @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                            @RequestParam(defaultValue = "10") @Positive int size) {
+        log.info("Получен запрос GET /bookings?state={}&from={}&size={}", state, from, size);
         return bookingService.getUserBookings(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getUserItemsBookings(@RequestHeader("X-Sharer-User-Id") long userId,
                                                  @RequestParam(defaultValue = "ALL") State state,
-                                                 @RequestParam(defaultValue = "0") @Min(0) int from,
-                                                 @RequestParam(defaultValue = "10") @Min(1) int size) {
-        log.info(String.format("Получен запрос GET /bookings/owner?state=%s&from=%d&size=%d", state, from, size));
+                                                 @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                 @RequestParam(defaultValue = "10") @Positive int size) {
+        log.info("Получен запрос GET /bookings/owner?state={}&from={}&size={}", state, from, size);
         return bookingService.getUserItemsBookings(userId, state, from, size);
     }
 }

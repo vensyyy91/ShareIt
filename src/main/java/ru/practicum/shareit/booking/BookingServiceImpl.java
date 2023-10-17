@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingCreationDto;
@@ -45,7 +46,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setBooker(booker);
         booking.setStatus(Status.WAITING);
         Booking newBooking = bookingRepository.save(booking);
-        log.info(String.format("Пользователем с id=%d добавлено бронирование: %s", userId, newBooking));
+        log.info("Пользователем с id={} добавлено бронирование: {}", userId, newBooking);
 
         return BookingMapper.toBookingDto(newBooking);
     }
@@ -62,7 +63,7 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingUnavailableException("Бронирование с id=" + bookingId + " уже было подтверждено или отклонено ранее.");
         }
         booking.setStatus(approved ? Status.APPROVED : Status.REJECTED);
-        log.info(String.format("Владелец вещи изменил статус бронирования с id=%d на %s", bookingId, booking.getStatus()));
+        log.info("Владелец вещи изменил статус бронирования с id={} на {}", bookingId, booking.getStatus());
 
         return BookingMapper.toBookingDto(booking);
     }
@@ -74,7 +75,7 @@ public class BookingServiceImpl implements BookingService {
         if (!Objects.equals(booking.getItem().getOwner(), user.getId()) && !Objects.equals(booking.getBooker().getId(), user.getId())) {
             throw new AccessDeniedException("Получить информацию о бронировании может только владелец вещи или автор бронирования.");
         }
-        log.info("Возвращено бронирование: " + booking);
+        log.info("Возвращено бронирование: {}", booking);
 
         return BookingMapper.toBookingDto(booking);
     }
@@ -83,51 +84,52 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getUserBookings(long userId, State state, int from, int size) {
         getUser(userId);
         List<Booking> bookings = new ArrayList<>();
+        Sort newestFirst = Sort.by(Sort.Direction.DESC, "start");
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(
+                bookings = bookingRepository.findAllByBookerId(
                         userId,
-                        PageRequest.of(from / size, size)
+                        PageRequest.of(from / size, size, newestFirst)
                 ).getContent();
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(
+                bookings = bookingRepository.findAllByBookerIdAndEndBefore(
                         userId,
                         LocalDateTime.now(),
-                        PageRequest.of(from / size, size)
+                        PageRequest.of(from / size, size, newestFirst)
                 ).getContent();
                 break;
             case CURRENT:
                 bookings = bookingRepository.findAllCurrentByBookerId(
                         userId,
                         LocalDateTime.now(),
-                        PageRequest.of(from / size, size)
+                        PageRequest.of(from / size, size, newestFirst)
                 ).getContent();
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(
+                bookings = bookingRepository.findAllByBookerIdAndStartAfter(
                         userId,
                         LocalDateTime.now(),
-                        PageRequest.of(from / size, size)
+                        PageRequest.of(from / size, size, newestFirst)
                 ).getContent();
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(
+                bookings = bookingRepository.findAllByBookerIdAndStatus(
                         userId,
                         Status.WAITING,
-                        PageRequest.of(from / size, size)
+                        PageRequest.of(from / size, size, newestFirst)
                 ).getContent();
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(
+                bookings = bookingRepository.findAllByBookerIdAndStatus(
                         userId,
                         Status.REJECTED,
-                        PageRequest.of(from / size, size)
+                        PageRequest.of(from / size, size, newestFirst)
                 ).getContent();
                 break;
         }
-        log.info(String.format("Возвращен список всех бронирований пользователя с id=%d, параметр state=%s: %s",
-                userId, state, bookings));
+        log.info("Возвращен список всех бронирований пользователя с id={}, параметр state={}: {}",
+                userId, state, bookings);
 
         return bookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
@@ -136,51 +138,52 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getUserItemsBookings(long userId, State state, int from, int size) {
         getUser(userId);
         List<Booking> bookings = new ArrayList<>();
+        Sort newestFirst = Sort.by(Sort.Direction.DESC, "start");
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findAllByItemOwnerOrderByStartDesc(
+                bookings = bookingRepository.findAllByItemOwner(
                         userId,
-                        PageRequest.of(from / size, size)
+                        PageRequest.of(from / size, size, newestFirst)
                 ).getContent();
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByItemOwnerAndEndBeforeOrderByStartDesc(
+                bookings = bookingRepository.findAllByItemOwnerAndEndBefore(
                         userId,
                         LocalDateTime.now(),
-                        PageRequest.of(from / size, size)
+                        PageRequest.of(from / size, size, newestFirst)
                 ).getContent();
                 break;
             case CURRENT:
                 bookings = bookingRepository.findAllCurrentByItemOwner(
                         userId,
                         LocalDateTime.now(),
-                        PageRequest.of(from / size, size)
+                        PageRequest.of(from / size, size, newestFirst)
                 ).getContent();
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByItemOwnerAndStartAfterOrderByStartDesc(
+                bookings = bookingRepository.findAllByItemOwnerAndStartAfter(
                         userId,
                         LocalDateTime.now(),
-                        PageRequest.of(from / size, size)
+                        PageRequest.of(from / size, size, newestFirst)
                 ).getContent();
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByItemOwnerAndStatusOrderByStartDesc(
+                bookings = bookingRepository.findAllByItemOwnerAndStatus(
                         userId,
                         Status.WAITING,
-                        PageRequest.of(from / size, size)
+                        PageRequest.of(from / size, size, newestFirst)
                 ).getContent();
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByItemOwnerAndStatusOrderByStartDesc(
+                bookings = bookingRepository.findAllByItemOwnerAndStatus(
                         userId,
                         Status.REJECTED,
-                        PageRequest.of(from / size, size)
+                        PageRequest.of(from / size, size, newestFirst)
                 ).getContent();
                 break;
         }
-        log.info(String.format("Возвращен список бронирований для всех вещей пользователя с id=%d, параметр state=%s: %s",
-                userId, state, bookings));
+        log.info("Возвращен список бронирований для всех вещей пользователя с id={}, параметр state={}: {}",
+                userId, state, bookings);
 
         return bookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }

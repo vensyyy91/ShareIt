@@ -159,9 +159,14 @@ class ItemControllerTest {
     @Test
     @SneakyThrows
     void addItem_withLongDescription_shouldReturnBadRequest() {
-        String description = "Testing is an essential part of software development. " +
-                "It ensures the quality and reliability of the software by finding bugs and issues. " +
-                "There are several types of testing, such as unit testing, integration testing, and system testing.";
+        String description = "Testing is a crucial part of the software development process. " +
+                "It helps to ensure that the code is error-free and functions as intended. " +
+                "There are different types of testing, including unit testing, functional testing, regression testing, " +
+                "and performance testing. Each type of test focuses on different aspects of the software, " +
+                "such as the correctness of the code, the user experience, or the speed of the application. " +
+                "By conducting these tests, the developers can identify and fix any problems in the software " +
+                "before it is released to the users. This helps to improve the quality of the product " +
+                "and increases customer satisfaction.";
         ItemDto item = new ItemDto(1L, "item1", description, true, null);
 
         mvc.perform(post(ITEMS_PATH)
@@ -260,9 +265,14 @@ class ItemControllerTest {
     @Test
     @SneakyThrows
     void updateItem_withLongDescription_shouldReturnBadRequest() {
-        String description = "Testing is an essential part of software development. " +
-                "It ensures the quality and reliability of the software by finding bugs and issues. " +
-                "There are several types of testing, such as unit testing, integration testing, and system testing.";
+        String description = "Testing is a crucial part of the software development process. " +
+                "It helps to ensure that the code is error-free and functions as intended. " +
+                "There are different types of testing, including unit testing, functional testing, regression testing, " +
+                "and performance testing. Each type of test focuses on different aspects of the software, " +
+                "such as the correctness of the code, the user experience, or the speed of the application. " +
+                "By conducting these tests, the developers can identify and fix any problems in the software " +
+                "before it is released to the users. This helps to improve the quality of the product " +
+                "and increases customer satisfaction.";
         ItemDto itemForUpdate = new ItemDto(null, null, description, null, null);
 
         mvc.perform(patch(ITEMS_PATH + "/1")

@@ -40,8 +40,8 @@ class ItemRequestServiceIT {
         user2 = new User(null, "user2", "user2@test.com");
         item1 = new Item(null, "item1", "first item for test", 1L, true, 1L);
         item2 = new Item(null, "item2", "second item for test", 1L, true, 1L);
-        itemRequest1 = new ItemRequest(null, "first test request", 2L, LocalDateTime.now().minusMinutes(5));
-        itemRequest2 = new ItemRequest(null, "second test request", 2L, LocalDateTime.now());
+        itemRequest1 = new ItemRequest(null, "first test request", user2, LocalDateTime.now().minusMinutes(5));
+        itemRequest2 = new ItemRequest(null, "second test request", user2, LocalDateTime.now());
     }
 
     @Test
@@ -67,7 +67,7 @@ class ItemRequestServiceIT {
         assertNotNull(itemRequest);
         assertEquals(1L, itemRequest.getId());
         assertEquals(itemRequestDto.getDescription(), itemRequest.getDescription());
-        assertEquals(2L, itemRequest.getRequester());
+        assertEquals(user2, itemRequest.getRequester());
         assertNotNull(itemRequest.getCreated());
     }
 
@@ -102,7 +102,7 @@ class ItemRequestServiceIT {
         ItemRequest itemRequest3 =  new ItemRequest(
                 null,
                 "third test request",
-                1L,
+                user1,
                 LocalDateTime.now().minusMinutes(1)
         );
         em.persist(user1);
