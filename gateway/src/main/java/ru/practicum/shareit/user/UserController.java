@@ -10,6 +10,8 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.validation.ValidationOnCreate;
 import ru.practicum.shareit.validation.ValidationOnUpdate;
 
+import javax.validation.constraints.Positive;
+
 @Controller
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -24,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getUserById(@PathVariable long userId) {
+    public ResponseEntity<Object> getUserById(@PathVariable @Positive long userId) {
         log.info("Получен запрос GET /users/{}", userId);
         return userClient.getUserById(userId);
     }
@@ -43,7 +45,7 @@ public class UserController {
     }
 
     @DeleteMapping("{userId}")
-    public ResponseEntity<Object> deleteUser(@PathVariable long userId) {
+    public ResponseEntity<Object> deleteUser(@PathVariable @Positive long userId) {
         log.info("Получен запрос DELETE /users/{}", userId);
         return userClient.deleteUser(userId);
     }

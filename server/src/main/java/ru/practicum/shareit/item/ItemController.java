@@ -14,10 +14,11 @@ import java.util.List;
 @RequestMapping("/items")
 @Slf4j
 public class ItemController {
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemInfoDto> getAllItems(@RequestHeader("X-Sharer-User-Id") long userId,
+    public List<ItemInfoDto> getAllItems(@RequestHeader(USER_ID_HEADER) long userId,
                                          @RequestParam int from,
                                          @RequestParam int size) {
         log.info("Получен запрос GET /items?from={}&size={}", from, size);
@@ -25,21 +26,21 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemInfoDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemInfoDto getItemById(@RequestHeader(USER_ID_HEADER) long userId,
                                    @PathVariable long itemId) {
         log.info("Получен запрос GET /items/{}", itemId);
         return itemService.getItemById(userId, itemId);
     }
 
     @PostMapping
-    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemDto addItem(@RequestHeader(USER_ID_HEADER) long userId,
                            @RequestBody ItemDto itemDto) {
         log.info("Получен запрос POST /items");
         return itemService.addItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemDto updateItem(@RequestHeader(USER_ID_HEADER) long userId,
                               @PathVariable long itemId,
                               @RequestBody ItemDto itemDto) {
         log.info("Получен запрос PATCH /items/{}", itemId);
@@ -55,7 +56,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
+    public CommentDto addComment(@RequestHeader(USER_ID_HEADER) long userId,
                                  @PathVariable long itemId,
                                  @RequestBody CommentDto commentDto) {
         log.info("Получен запрос POST /items/{}/comment", itemId);

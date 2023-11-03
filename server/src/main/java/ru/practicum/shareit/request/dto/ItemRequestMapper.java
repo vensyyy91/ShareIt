@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request.dto;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.request.ItemRequest;
 
@@ -7,11 +8,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@UtilityClass
 public class ItemRequestMapper {
-    private ItemRequestMapper() {
-    }
-
-    public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
+    public ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
         Long id = itemRequest.getId();
         String description = itemRequest.getDescription();
         Long requester = itemRequest.getRequester().getId();
@@ -20,7 +19,7 @@ public class ItemRequestMapper {
         return new ItemRequestDto(id, description, requester, created, new ArrayList<>());
     }
 
-    public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest, List<ItemDto> items) {
+    public ItemRequestDto toItemRequestDto(ItemRequest itemRequest, List<ItemDto> items) {
         Long id = itemRequest.getId();
         String description = itemRequest.getDescription();
         Long requester = itemRequest.getRequester().getId();

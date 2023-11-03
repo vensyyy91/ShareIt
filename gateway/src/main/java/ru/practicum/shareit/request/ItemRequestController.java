@@ -17,23 +17,24 @@ import javax.validation.constraints.PositiveOrZero;
 @Validated
 @Slf4j
 public class ItemRequestController {
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
     private final ItemRequestClient itemRequestClient;
 
     @PostMapping
-    public ResponseEntity<Object> addRequest(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> addRequest(@RequestHeader(USER_ID_HEADER) @Positive long userId,
                                              @Valid @RequestBody ItemRequestDto itemRequestDto) {
         log.info("Получен запрос POST /requests");
         return itemRequestClient.addRequest(userId, itemRequestDto);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getRequests(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public ResponseEntity<Object> getRequests(@RequestHeader(USER_ID_HEADER) @Positive long userId) {
         log.info("Получен запрос GET /requests");
         return itemRequestClient.getRequests(userId);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getAllRequests(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> getAllRequests(@RequestHeader(USER_ID_HEADER) @Positive long userId,
                                                @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                                @RequestParam(defaultValue = "10") @Positive int size) {
         log.info("Получен запрос GET /requests/all?from={}&size={}", from, size);
@@ -41,8 +42,8 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ResponseEntity<Object> getRequestById(@RequestHeader("X-Sharer-User-Id") long userId,
-                                         @PathVariable long requestId) {
+    public ResponseEntity<Object> getRequestById(@RequestHeader(USER_ID_HEADER) @Positive long userId,
+                                         @PathVariable @Positive long requestId) {
         log.info("Получен запрос GET /requests/{}", requestId);
         return itemRequestClient.getRequestById(userId, requestId);
     }

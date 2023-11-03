@@ -1,15 +1,14 @@
 package ru.practicum.shareit.item.dto;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.dto.BookingInfoDto;
 import ru.practicum.shareit.item.Item;
 
 import java.util.List;
 
+@UtilityClass
 public class ItemMapper {
-    private ItemMapper() {
-    }
-
-    public static ItemDto toItemDto(Item item) {
+    public ItemDto toItemDto(Item item) {
         Long id = item.getId();
         String name = item.getName();
         String description = item.getDescription();
@@ -19,25 +18,28 @@ public class ItemMapper {
         return new ItemDto(id, name, description, isAvailable, requestId);
     }
 
-    public static ItemInfoDto toItemInfoDto(Item item,
-                                            BookingInfoDto lastBooking,
-                                            BookingInfoDto nextBooking,
-                                            List<CommentDto> comments) {
-        Long id = item.getId();
-        String name = item.getName();
-        String description = item.getDescription();
-        Boolean isAvailable = item.getAvailable();
-
-        return new ItemInfoDto(id, name, description, isAvailable, lastBooking, nextBooking, comments);
+    public ItemInfoDto toItemInfoDto(Item item,
+                                     BookingInfoDto lastBooking,
+                                     BookingInfoDto nextBooking,
+                                     List<CommentDto> comments) {
+        return ItemInfoDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .lastBooking(lastBooking)
+                .nextBooking((nextBooking))
+                .comments(comments)
+                .build();
     }
 
-    public static Item toItem(ItemDto itemDto) {
-        Long id = itemDto.getId();
-        String name = itemDto.getName();
-        String description = itemDto.getDescription();
-        Boolean isAvailable = itemDto.getAvailable();
-        Long request = itemDto.getRequestId();
-
-        return new Item(id, name, description, null, isAvailable, request);
+    public Item toItem(ItemDto itemDto) {
+        return Item.builder()
+                .id(itemDto.getId())
+                .name(itemDto.getName())
+                .description(itemDto.getDescription())
+                .available(itemDto.getAvailable())
+                .request(itemDto.getRequestId())
+                .build();
     }
 }

@@ -12,23 +12,24 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class ItemRequestController {
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
     private final ItemRequestService itemRequestService;
 
     @PostMapping
-    public ItemRequestDto addRequest(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemRequestDto addRequest(@RequestHeader(USER_ID_HEADER) long userId,
                                      @RequestBody ItemRequestDto itemRequestDto) {
         log.info("Получен запрос POST /requests");
         return itemRequestService.addRequest(userId, itemRequestDto);
     }
 
     @GetMapping
-    public List<ItemRequestDto> getRequests(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemRequestDto> getRequests(@RequestHeader(USER_ID_HEADER) long userId) {
         log.info("Получен запрос GET /requests");
         return itemRequestService.getUserRequests(userId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") long userId,
+    public List<ItemRequestDto> getAllRequests(@RequestHeader(USER_ID_HEADER) long userId,
                                                @RequestParam int from,
                                                @RequestParam int size) {
         log.info("Получен запрос GET /requests/all?from={}&size={}", from, size);
@@ -36,7 +37,7 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDto getRequestById(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemRequestDto getRequestById(@RequestHeader(USER_ID_HEADER) long userId,
                                          @PathVariable long requestId) {
         log.info("Получен запрос GET /requests/{}", requestId);
         return itemRequestService.getRequestById(userId, requestId);

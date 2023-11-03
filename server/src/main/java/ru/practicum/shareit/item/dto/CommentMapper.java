@@ -1,14 +1,13 @@
 package ru.practicum.shareit.item.dto;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.Comment;
 
 import java.time.LocalDateTime;
 
+@UtilityClass
 public class CommentMapper {
-    private CommentMapper() {
-    }
-
-    public static CommentDto toCommentDto(Comment comment) {
+    public CommentDto toCommentDto(Comment comment) {
         Long id = comment.getId();
         String text = comment.getText();
         String authorName = comment.getAuthor().getName();
@@ -17,10 +16,10 @@ public class CommentMapper {
         return new CommentDto(id, text, authorName, created);
     }
 
-    public static Comment toComment(CommentDto commentDto) {
-        Long id = commentDto.getId();
-        String text = commentDto.getText();
-
-        return new Comment(id, text, null, null, null);
+    public Comment toComment(CommentDto commentDto) {
+        return Comment.builder()
+                .id(commentDto.getId())
+                .text(commentDto.getText())
+                .build();
     }
 }

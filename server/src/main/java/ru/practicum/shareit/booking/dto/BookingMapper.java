@@ -1,30 +1,29 @@
 package ru.practicum.shareit.booking.dto;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.booking.Status;
+import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
+@UtilityClass
 public class BookingMapper {
-    private BookingMapper() {
+    public BookingDto toBookingDto(Booking booking) {
+        Item item = booking.getItem();
+        User booker = booking.getBooker();
+
+        return BookingDto.builder()
+                .id(booking.getId())
+                .start(booking.getStart())
+                .end(booking.getEnd())
+                .item(new BookingDto.Item(item.getId(), item.getName()))
+                .booker(new BookingDto.Booker(booker.getId(), booker.getName()))
+                .status(booking.getStatus())
+                .build();
     }
 
-    public static BookingDto toBookingDto(Booking booking) {
-        Long id = booking.getId();
-        LocalDateTime start = booking.getStart();
-        LocalDateTime end = booking.getEnd();
-        Long itemId = booking.getItem().getId();
-        String itemName = booking.getItem().getName();
-        BookingDto.Item item = new BookingDto.Item(itemId, itemName);
-        Long bookerId = booking.getBooker().getId();
-        String bookerName = booking.getBooker().getName();
-        BookingDto.Booker booker = new BookingDto.Booker(bookerId, bookerName);
-        Status status = booking.getStatus();
-
-        return new BookingDto(id, start, end, item, booker, status);
-    }
-
-    public static BookingInfoDto toBookingInfoDto(Booking booking) {
+    public BookingInfoDto toBookingInfoDto(Booking booking) {
         Long id = booking.getId();
         Long bookerId = booking.getBooker().getId();
         LocalDateTime start = booking.getStart();
@@ -33,10 +32,10 @@ public class BookingMapper {
         return new BookingInfoDto(id, bookerId, start, end);
     }
 
-    public static Booking toBooking(BookingCreationDto bookingCreationDto) {
-        LocalDateTime start = bookingCreationDto.getStart();
-        LocalDateTime end = bookingCreationDto.getEnd();
-
-        return new Booking(null, start, end, null, null, null);
+    public Booking toBooking(BookingCreationDto bookingCreationDto) {
+        return Booking.builder()
+                .start(bookingCreationDto.getStart())
+                .end(bookingCreationDto.getEnd())
+                .build();
     }
 }

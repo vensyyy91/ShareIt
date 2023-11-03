@@ -19,10 +19,11 @@ import javax.validation.constraints.PositiveOrZero;
 @Slf4j
 @Validated
 public class BookingController {
+	private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 	private final BookingClient bookingClient;
 
 	@GetMapping
-	public ResponseEntity<Object> getUserBookings(@RequestHeader("X-Sharer-User-Id") long userId,
+	public ResponseEntity<Object> getUserBookings(@RequestHeader(USER_ID_HEADER) @Positive long userId,
 												  @RequestParam(name = "state", defaultValue = "all") String stateParam,
 												  @RequestParam(defaultValue = "0") @PositiveOrZero int from,
 												  @RequestParam(defaultValue = "10") @Positive int size) {
@@ -33,7 +34,7 @@ public class BookingController {
 	}
 
 	@GetMapping("/owner")
-	public ResponseEntity<Object> getUserItemsBookings(@RequestHeader("X-Sharer-User-Id") long userId,
+	public ResponseEntity<Object> getUserItemsBookings(@RequestHeader(USER_ID_HEADER) @Positive long userId,
 													   @RequestParam(name = "state", defaultValue = "all") String stateParam,
 													   @RequestParam(defaultValue = "0") @PositiveOrZero int from,
 													   @RequestParam(defaultValue = "10") @Positive int size) {
@@ -44,23 +45,23 @@ public class BookingController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Object> addBooking(@RequestHeader("X-Sharer-User-Id") long userId,
+	public ResponseEntity<Object> addBooking(@RequestHeader(USER_ID_HEADER) @Positive long userId,
 											 @RequestBody @Valid BookingDto bookingDto) {
 		log.info("Получен запрос POST /bookings");
 		return bookingClient.addBooking(userId, bookingDto);
 	}
 
 	@PatchMapping("/{bookingId}")
-	public ResponseEntity<Object> approveBooking(@RequestHeader("X-Sharer-User-Id") long userId,
-									 @PathVariable long bookingId,
+	public ResponseEntity<Object> approveBooking(@RequestHeader(USER_ID_HEADER) @Positive long userId,
+									 @PathVariable @Positive long bookingId,
 									 @RequestParam boolean approved) {
 		log.info("Получен запрос PATCH /bookings/{}?approved={}", bookingId, approved);
 		return bookingClient.approveBooking(userId, bookingId, approved);
 	}
 
 	@GetMapping("/{bookingId}")
-	public ResponseEntity<Object> getBooking(@RequestHeader("X-Sharer-User-Id") long userId,
-											 @PathVariable long bookingId) {
+	public ResponseEntity<Object> getBooking(@RequestHeader(USER_ID_HEADER) @Positive long userId,
+											 @PathVariable @Positive long bookingId) {
 		log.info("Получен запрос GET /bookings/{}", bookingId);
 		return bookingClient.getBooking(userId, bookingId);
 	}

@@ -21,10 +21,11 @@ import javax.validation.constraints.PositiveOrZero;
 @Validated
 @Slf4j
 public class ItemController {
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
     private final ItemClient itemClient;
 
     @GetMapping
-    public ResponseEntity<Object> getAllItems(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> getAllItems(@RequestHeader(USER_ID_HEADER) @Positive long userId,
                                               @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                               @RequestParam(defaultValue = "10") @Positive int size) {
         log.info("Получен запрос GET /items?from={}&size={}", from, size);
@@ -32,29 +33,29 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<Object> getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
-                                              @PathVariable long itemId) {
+    public ResponseEntity<Object> getItemById(@RequestHeader(USER_ID_HEADER) @Positive long userId,
+                                              @PathVariable @Positive long itemId) {
         log.info("Получен запрос GET /items/{}", itemId);
         return itemClient.getItemById(userId, itemId);
     }
 
     @PostMapping
-    public ResponseEntity<Object> addItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> addItem(@RequestHeader(USER_ID_HEADER) @Positive long userId,
                                           @Validated(ValidationOnCreate.class) @RequestBody ItemDto itemDto) {
         log.info("Получен запрос POST /items");
         return itemClient.addItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<Object> updateItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                                             @PathVariable long itemId,
+    public ResponseEntity<Object> updateItem(@RequestHeader(USER_ID_HEADER) @Positive long userId,
+                                             @PathVariable @Positive long itemId,
                                              @Validated(ValidationOnUpdate.class) @RequestBody ItemDto itemDto) {
         log.info("Получен запрос PATCH /items/{}", itemId);
         return itemClient.updateItem(userId, itemId, itemDto);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> searchItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> searchItem(@RequestHeader(USER_ID_HEADER) @Positive long userId,
                                              @RequestParam String text,
                                              @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                              @RequestParam(defaultValue = "10") @Positive int size) {
@@ -63,8 +64,8 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public ResponseEntity<Object> addComment(@RequestHeader("X-Sharer-User-Id") long userId,
-                                             @PathVariable long itemId,
+    public ResponseEntity<Object> addComment(@RequestHeader(USER_ID_HEADER) @Positive long userId,
+                                             @PathVariable @Positive long itemId,
                                              @Valid @RequestBody CommentDto commentDto) {
         log.info("Получен запрос POST /items/{}/comment", itemId);
         return itemClient.addComment(userId, itemId, commentDto);
