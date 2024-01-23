@@ -20,6 +20,7 @@ services:
       - db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
+      - TZ=Europe/Moscow
 
   db:
     image: postgres:13.7-alpine
